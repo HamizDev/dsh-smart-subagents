@@ -1,0 +1,46 @@
+name: Test and publish package
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dsh-smart-subagents-release
+  cancel-in-progress: false
+
+jobs:
+  verify-and-release:
+    if: github.repository == 'HamizDev/dsh-smart-subagents'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify package and tests
+        run: npm run verify
+      - name: Build installable archive
+        run: npm pack
+      - name: Publish release for new versions only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "JSON.parse(require('fs').readFileSync('package.json','utf8')).version")"
+          TAG="v${VERSION}"
+          ASSET="hamizdev-dsh-smart-subagents-${VERSION}.tgz"
+          test -f "$ASSET"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Release $TAG already exists; no new release created."
+            exit 0
+          fi
+          gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "$TAG" --notes "DSH Smart Subagents $TAG: native subagent delegation policy with conservative, balanced, aggressive and off modes. Model-driven and advisory; does not replace native DSH execution."
