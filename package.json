@@ -1,0 +1,39 @@
+{
+  "name": "@hamizdev/dsh-smart-subagents",
+  "version": "0.1.0",
+  "description": "Codex-inspired automatic subagent delegation policy for DeepSeek Harness using native DSH subagent tools",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "examples"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test",
+    "verify": "npm test && node --check index.js && npm pack --dry-run"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "subagent",
+    "agent",
+    "delegation",
+    "codex"
+  ],
+  "license": "MIT"
+}
