@@ -1,5 +1,5 @@
-# This plugin adds a delegation policy. It never replaces the native executor.
-# It works with stock 'standard' and 'cordis' presets when subagent tools are visible.
+# Smart Subagents v0.2: only contributes a prompt policy.
+# To show the Team collaboration interface, install AgentTeams separately.
 - insert:
     - id: smart-subagents
       name: '@hamizdev/dsh-smart-subagents'
@@ -7,3 +7,6 @@
         mode: balanced
         maxParallel: 3
         preferForkForContext: true
+        preferAgentTeams: true
+        teamMinWorkstreams: 2
+        requireTeamApproval: true
