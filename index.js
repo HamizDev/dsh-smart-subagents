@@ -50,7 +50,7 @@ const MODE_POLICIES = {
 export function buildPolicy(config, visibleTools) {
   const c = normalizeConfig(config)
   if (c.mode === 'off' || visibleTools.length === 0) return ''
-  const tools = visibleTools.map(s => ``${s}``).join(', ')
+  const tools = visibleTools.map(s => `${s}`).join(', ')
   const hasSpawn = visibleTools.includes('subagent')
   const hasFork = visibleTools.includes('subagent_fork')
 
