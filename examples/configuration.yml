@@ -1,10 +1,16 @@
-# Example values for the plugin row in your DSH profile's cordis.patch.yml.
-# If the installed native subagent tools are disabled, enable them in the active
-# agent preset (e.g. standard); this policy plugin does NOT enable them.
+# See README for compatible DSH & AgentTeams versions.
+# Optional AgentTeams plugin:
+#   @nanmicoder/dsh-agent-teams@0.1.22
+# Optional Value Router plugin:
+#   @gjs27/dsh-value-router@0.10.0
+# Both require their own setup; Smart Subagents never installs them silently.
 - insert:
     - id: smart-subagents
       name: '@hamizdev/dsh-smart-subagents'
       config:
-        mode: balanced          # off | conservative | balanced | aggressive
-        maxParallel: 3          # guidance ceiling only; native limits still apply
+        mode: balanced
+        maxParallel: 3                 # model guidance, not a hard host limit
         preferForkForContext: true
+        preferAgentTeams: true         # automatically choose teams if tools exist
+        teamMinWorkstreams: 2          # 2..6; larger teams still require useful work
+        requireTeamApproval: true      # staged plan before execution
