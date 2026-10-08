@@ -1,0 +1,9 @@
+# This plugin adds a delegation policy. It never replaces the native executor.
+# It works with stock 'standard' and 'cordis' presets when subagent tools are visible.
+- insert:
+    - id: smart-subagents
+      name: '@hamizdev/dsh-smart-subagents'
+      config:
+        mode: balanced
+        maxParallel: 3
+        preferForkForContext: true
