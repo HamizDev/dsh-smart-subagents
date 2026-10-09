@@ -1,29 +1,56 @@
-# Manual npm publishing after the user has authorized this package on npm.
-# Publishing will NOT succeed just because a GitHub repository exists.
-# Before dispatching: configure npm Trusted Publishing for this repository,
-# or publish the first version locally with your own npm login.
-name: Publish to npm (manual)
+# npm Trusted Publishing (OIDC): verified on GitHub-hosted runners only.
+# The matching Trusted Publisher on npm must name exactly this file:
+# HamizDev / dsh-smart-subagents / publish-npm.yml
+name: Publish to npm (OIDC)
+
 on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
   workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: dsh-smart-subagents-npm-publish
+  cancel-in-progress: false
+
 jobs:
   publish:
+    if: github.repository == 'HamizDev/dsh-smart-subagents'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - name: Configure Node and public npm registry
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-      - name: Verify repository
-        run: npm test && node --check index.js && npm pack --dry-run --json > /tmp/pack-check.json
-      - name: Publish with npm Trusted Publishing
+          package-manager-cache: false
+      - name: Install an npm CLI supporting OIDC trusted publishers
+        run: npm install --global npm@latest
+      - name: Verify and pack release inputs
         run: |
-          npm install --global npm@latest
-          npm publish --access public --provenance
+          node --version
+          npm --version
+          npm test
+          node --check index.js
+          npm pack --dry-run
+          npm view @nanmicoder/dsh-agent-teams@0.1.22 version --registry=https://registry.npmjs.org
+      - name: Publish exactly the checked package with OIDC
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "${PACKAGE}@${VERSION}" version --registry=https://registry.npmjs.org --fetch-retries=0 2>/dev/null | grep -Fxq "${VERSION}"; then
+            echo "Already on npm: ${PACKAGE}@${VERSION}; skipping republish."
+            exit 0
+          fi
+          npm publish --access public
