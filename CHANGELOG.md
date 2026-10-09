@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.2 — OIDC trusted publishing verification
+
+- Verify automated npm publishing from the repository's `publish-npm.yml` workflow via GitHub OIDC, without a persistent npm token.
+- Trigger npm publishing only when the package manifest changes; keep optional manual publishing and skip already-published versions.
+- Verify npm CLI / package archive / pinned AgentTeams dependency before publishing; disable npm caching during release.
+- Update English and Simplified Chinese installation instructions to reflect the published npm package.
+
+
 ## 0.3.1 — Unified one-install distribution
 
 - Installs the pinned `@nanmicoder/dsh-agent-teams@0.1.22` as a normal npm runtime dependency.
