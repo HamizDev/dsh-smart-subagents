@@ -1,4 +1,4 @@
-# DSH Smart Subagents v0.3.0: a single installable composition layer.
+# DSH Smart Subagents v0.3.1: a single installable composition layer.
 # AgentTeams is a pinned runtime dependency; its own bundle patch is NOT
 # automatically loaded transitively. Mount it here, then our policy.
 # Do NOT install a second independent AgentTeams bundle into the same profile.
