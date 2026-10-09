@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 — Unified one-install distribution
+## 0.3.1 — Unified one-install distribution
 
 - Installs the pinned `@nanmicoder/dsh-agent-teams@0.1.22` as a normal npm runtime dependency.
 - Explicitly mounts AgentTeams in the *same* Cordis bundle patch as Smart Subagents. Transitive bundle patches are not automatically mounted by DSH.
