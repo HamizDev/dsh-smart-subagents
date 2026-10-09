@@ -1,7 +1,7 @@
 {
   "name": "@hamizdev/dsh-smart-subagents",
-  "version": "0.2.0",
-  "description": "Codex-inspired autonomous delegation policy for DSH native subagents with optional AgentTeams workspace and Value Router compatibility",
+  "version": "0.3.0",
+  "description": "One-install Codex-inspired DSH subagent dispatcher with integrated AgentTeams collaboration dashboard and optional Value Router support",
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -23,7 +23,7 @@
   },
   "scripts": {
     "test": "node --test",
-    "verify": "npm test && node --check index.js && npm pack --dry-run"
+    "verify": "npm test && node --check index.js && npm pack --dry-run --json"
   },
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
@@ -36,7 +36,25 @@
     "multi-agent",
     "model-routing",
     "delegation",
-    "codex"
+    "codex",
+    "one-install",
+    "collaboration-dashboard",
+    "agent-orchestration"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@nanmicoder/dsh-agent-teams": "0.1.22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HamizDev/dsh-smart-subagents.git"
+  },
+  "homepage": "https://github.com/HamizDev/dsh-smart-subagents",
+  "bugs": {
+    "url": "https://github.com/HamizDev/dsh-smart-subagents/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }
