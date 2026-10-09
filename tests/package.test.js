@@ -8,7 +8,7 @@ const yaml = text('cordis.patch.yml')
 
 test('one-install package pins real AgentTeams and declares a Cordis bundle', () => {
   assert.equal(pkg.name, '@hamizdev/dsh-smart-subagents')
-  assert.equal(pkg.version, '0.3.1')
+  assert.match(pkg.version, /^0\.3\.[0-9]+$/)
   assert.equal(pkg.dependencies['@nanmicoder/dsh-agent-teams'], '0.1.22')
   assert.equal(pkg.dsh.bundle.patch, './cordis.patch.yml')
   assert.equal(pkg.publishConfig.access, 'public')
@@ -26,8 +26,18 @@ test('bundle explicitly mounts each plugin once under its canonical id', () => {
 test('both README languages document one-install and optional Value Router', () => {
   for (const path of ['README.md', 'README.zh-CN.md']) {
     const content = text(path)
-    assert.match(content, /@hamizdev\/dsh-smart-subagents@0\.3\.1/)
+    assert.ok(content.includes(`@hamizdev/dsh-smart-subagents@${pkg.version}`))
     assert.match(content, /Value Router/)
   }
   assert.equal(pkg.dependencies['@gjs27/dsh-value-router'], undefined)
+})
+
+test('OIDC publishing workflow matches npm trusted publisher and runs on version bump', () => {
+  const content = text('.github/workflows/publish-npm.yml')
+  assert.match(content, /name: Publish to npm/)
+  assert.match(content, /id-token: write/)
+  assert.match(content, /package.json/)
+  assert.match(content, /npm publish --access public/)
+  assert.match(content, /package-manager-cache: false/)
+  assert.doesNotMatch(content, /NODE_AUTH_TOKEN/)
 })
