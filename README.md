@@ -2,9 +2,9 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-**v0.3.0 — one install, native subagents + AgentTeams workspace.** A Codex-inspired autonomous delegation policy for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
+**v0.3.1 — one install, native subagents + AgentTeams workspace.** A Codex-inspired autonomous delegation policy for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
 
-> **Release status:** Source and the local `.tgz` archive are available; do not use the npm install spec until `@hamizdev/dsh-smart-subagents@0.3.0` is actually published to npm. The package name cannot be reserved or published by creating a GitHub repository.
+> **Release status:** Source and the local `.tgz` archive are available; do not use the npm install spec until `@hamizdev/dsh-smart-subagents@0.3.1` is actually published to npm. The package name cannot be reserved or published by creating a GitHub repository.
 
 ## What is included?
 
@@ -21,13 +21,13 @@ No fabricated progress bars or duplicate team schedulers. The actual team panel 
 
 **Required:** DSH Desktop with compatible embedded Harness. The recommended target is Harness **`0.2.0-rc.2`** with AgentTeams **`0.1.22`**. The standalone `dsh --version` may not correspond to your Desktop's internal version.
 
-When v0.3.0 is published to npm:
+When v0.3.1 is published to npm:
 
 1. Open **DSH Desktop → Plugins → Add plugin**.
 2. Paste exactly:
 
    ```text
-   @hamizdev/dsh-smart-subagents@0.3.0
+   @hamizdev/dsh-smart-subagents@0.3.1
    ```
 
 3. Select **Enable now**, and restart DSH if prompted.
@@ -37,7 +37,7 @@ When v0.3.0 is published to npm:
 For a CLI-managed profile, **only if it controls the same DSH installation**:
 
 ```sh
-dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.0
+dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.1
 ```
 
 ### Test an unpublished build
@@ -47,7 +47,7 @@ From this checkout, create a local package with `npm pack`; then install the gen
 ```powershell
 npm test
 npm pack
-dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.3.0.tgz --ignore-scripts
+dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.3.1.tgz --ignore-scripts
 ```
 
 **Important:** Running `npm pack` offline checks this package's declared artifacts, but does **not** prove its npm dependency can be downloaded or the DSH runtime integration succeeds. The dependency is fetched by DSH's package manager when the archive is installed.
