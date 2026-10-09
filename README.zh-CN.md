@@ -2,76 +2,83 @@
 
 [English](README.md) | **简体中文**
 
-> **v0.2.0** — 为 DeepSeek Harness（DSH）提供类似 Codex 的自动子智能体分派策略，可选配 [AgentTeams](https://github.com/NanmiCoder/dsh-agent-teams) 和 [Value Router](https://github.com/zhuifengqug/dsh-value-router)。
+**v0.3.0 — 一次安装，获得自动分派和真实团队协作面板。** 适用于 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 的 Codex 风格自动子智能体分工策略。
 
-Smart Subagents 是一个**按当前智能体权限动态生效的策略插件**：帮助主智能体判断任务是否适合分派，以及应该调用哪种**已有**的 DSH 工具。它不重新实现子智能体执行器、任务调度器，也不自己绘制团队 UI。
+> **发布状态：** GitHub 源码和本地 `.tgz` 安装包可以先使用，但只有 `@hamizdev/dsh-smart-subagents@0.3.0` **真正发布到 npm 后**，才能在 DSH 中直接输入此名称安装。仅创建 GitHub 仓库并不能获得 npm 包。
 
-## 工作方式
+## 一个插件里有哪些能力？
 
-| 任务情况 | 推荐执行方式 | 界面效果 |
+| 功能 | 来源 | 一次 npm 安装是否提供？ |
 | --- | --- | --- |
-| 简单、连续依赖的任务 | 主智能体直接执行 | 普通对话 |
-| 可独立完成的调查、审查或小范围编码 | DSH 原生 `subagent` / `subagent_fork` | 原生子智能体调用与结果 |
-| 有多名成员、任务依赖或需要进度跟踪的大型任务 | 安装且可用时优先 **AgentTeams** | 它提供的真实 **Team collaboration 团队协作面板** |
-| 选择模型、供应商和推理等级 | DSH 原生路由；可选 **Value Router** | 宿主路由数据及 AgentTeams 实际成员模型 |
+| 按任务复杂度建议自动分工 | **Smart Subagents**（本项目） | **是** |
+| 普通 / 后台子智能体 | **DSH 原生** `subagent` / `subagent_fork` | 由兼容 DSH 预设提供 |
+| 持久化团队、成员状态、任务 DAG、进度条及截图中的**团队协作面板** | [**AgentTeams**](https://github.com/NanmiCoder/dsh-agent-teams) `0.1.22` | **是**，作为固定版本依赖自动安装并加载 |
+| Low/Medium/High/Max 模型路由与供应商轮转 | [**Value Router**](https://github.com/zhuifengqug/dsh-value-router) | **可选兼容**，暂未内置发布包 |
 
-**你截图里的成员列表、分段进度条、任务 DAG（依赖图）和历史记录由 AgentTeams 提供。** 本插件不会渲染第二套面板，更不会伪造进度。可在 [AgentTeams 仓库](https://github.com/NanmiCoder/dsh-agent-teams#view-teams-in-the-workspace) 查看界面和使用说明。
+团队列表、真实任务进度、依赖图和成员使用的模型来自 AgentTeams 的运行数据，**不会生成假进度条，也不会额外实现第二套团队调度器**。完整面板能否显示还取决于 DSH Desktop 是否加载了版本兼容的客户端插件。
 
-## 功能特性
+## 安装：只填一个 npm 包名
 
-- 四档策略：`off`（关闭）、`conservative`（保守）、**`balanced`（均衡，默认）**、`aggressive`（积极）。
-- 根据任务特征，引导主智能体自主选择**自己完成、普通子智能体、AgentTeams 团队计划**；实际行为仍取决于模型。
-- 仅当当前智能体真实可见 `agent_teams_create` 时，才认定它有权创建团队；单独拥有 `agent_teams_status` 不算。
-- 默认先制作**可审查的团队计划**；用户在 AgentTeams 原生面板点击 **Approve & Run（确认并启动）** 后才执行。
-- 避免重复调度：已交给 AgentTeams 的工作不再另外启动普通 `subagent` 重复修改。
-- 不接管模型、白名单、备用线路和推理等级；这些由 DSH / Value Router 决定。
-- 尊重宿主沙盒、审批、子智能体深度限制和用户明确要求。
-- `maxParallel` 只是**并行数量建议**，不是底层强制并发上限。
+**运行环境：** 推荐 Harness 内核 **`0.2.0-rc.2`**，对应 AgentTeams **`0.1.22`**。注意 DSH Desktop 自带内核；全局终端执行 `dsh --version` 不一定是桌面端内核的真实版本。
 
-## 运行要求与兼容性
+待 v0.3.0 **正式发布到 npm 后**：
 
-- DSH 已加载 `systemPrompt`、`tools` 服务；如需普通子智能体，应在当前预设启用原生委派工具。
-- **AgentTeams v0.1.22** 与 **Value Router v0.10.0** 的文档均以 **DSH 0.2.0-rc.2** 为主要适配版本。安装前应核实 **DSH Desktop 内嵌 Harness 的实际版本**，全局 `dsh` CLI 版本不一定代表桌面版版本。
-- 本地开发、测试要求 Node.js `^22.19.0 || >=24.0.0`。
-- **AgentTeams 和 Value Router 都是可选插件**；安装 Smart Subagents 不会自动安装或启用它们。
+1. 进入 **DSH Desktop → 插件（Plugins）→ 添加插件（Add plugin）**。
+2. 输入以下完整包名：
 
-目前已进行源代码兼容性检查和本地策略测试，但**三个插件在你的 DSH Desktop 上联合运行尚未完成端到端实测**。
+   ```text
+   @hamizdev/dsh-smart-subagents@0.3.0
+   ```
 
-## 安装方法
+3. 选择 **立即启用（Enable now）**，按提示重启 DSH。
+4. 让 DSH 执行含多个独立子任务的复杂工作；Smart Subagents 可以自动建议创建 AgentTeams 团队计划。
+5. 在团队面板核对成员和任务后，点击 **Approve & Run（确认并启动团队）**。
+6. 点击 **View team / Team collaboration（查看团队／团队协作）**，就能看到真实团队状态、任务依赖和每个成员的模型。
 
-### 第一步：安装 AgentTeams（可选，提供截图中的界面）
+仅在 CLI 与桌面端确实共享同一个 Profile 时，可以通过命令安装：
 
-在 **DSH Desktop → Plugins → Add plugin（添加插件）** 中输入：
-
-```text
-@nanmicoder/dsh-agent-teams@0.1.22
+```powershell
+dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.0
 ```
 
-安装、启用后，AgentTeams 自己提供 Team collaboration 页面，包括团队成员、任务依赖和实时进度。也可以直接通过 `/agent-teams <任务目标>` 运行它。
+### npm 尚未发布前，先测试安装包
 
-### 第二步：安装 Smart Subagents
-
-可前往 [v0.2.0 Releases 页面](https://github.com/HamizDev/dsh-smart-subagents/releases/tag/v0.2.0) 获取**已发布**的 `hamizdev-dsh-smart-subagents-0.2.0.tgz`，或者从仓库源码构建：
+先从仓库构建 `.tgz`：
 
 ```powershell
 npm test
 npm pack
-# 在包含打包文件的目录运行：
-dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.2.0.tgz --ignore-scripts
+dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.3.0.tgz --ignore-scripts
 ```
 
-如果你的 DSH Desktop 插件管理器支持导入本地安装包，也可以在应用内安装。安装后**完整重启 DSH**。注意独立 CLI 和桌面版可能使用不同的运行时、配置及 Profile。
+如果 DSH Desktop 插件管理器支持本地包导入，也可以直接选取该 `.tgz`。注意：`npm pack` 本身只检查文件完整性，不代表网络上能取回依赖，也不代表 DSH Desktop 中的 UI 已完成实际验证；安装时 DSH 包管理器仍需解析 AgentTeams 依赖。
 
-### 第三步：安装 Value Router（可选）
+### 之前已单独装过 AgentTeams 怎么办？
 
-从 [Value Router 仓库](https://github.com/zhuifengqug/dsh-value-router) 单独安装并配置 `low`、`medium`、`high`、`max` 四档线路、宿主子智能体白名单和备用线路。Value Router 是模型路由的唯一负责人，Smart Subagents 不会覆盖它的选择，也不会擅自使用未经授权的备用模型。
+整合包以 AgentTeams 官方的 `agent-teams` ID 加载模块。**同一个 DSH Profile 不应再同时启用另一份独立 AgentTeams 插件**，否则可能出现重复加载、工具冲突或界面重复。
 
-## 配置说明
+建议先备份现有配置及 `.agent-teams` 团队状态，然后停用或卸载单独安装的 AgentTeams，再启用 Smart Subagents 整合包。本插件不会自动删除团队数据；不同 Profile 之间彼此独立。
 
-插件自带的 `cordis.patch.yml` 默认插入如下配置：
+## 自动分工原理
+
+- **简单、必须串行完成的任务：** 主智能体直接做。
+- **独立调查、代码检查、局部测试：** 根据实际工具能力调用 DSH 原生 `subagent` / `subagent_fork`。
+- **多个角色与依赖任务：** 使用 AgentTeams 生成待审批计划，包括成员、职责和 DAG；用户同意后才执行。
+- **模型选择：** 由 DSH 或已启用的 Value Router 决定 `provider / model / reasoning_effort`，不会擅自换掉你的主模型、修改模型白名单或绕过指定路线。
+
+这是针对模型的**分派策略**，不是强制启动子智能体的底层拦截器。`maxParallel` 只是指导数字；实际并发、审批、权限与任务状态由 DSH／AgentTeams 执行和记录。
+
+## 配置结构
+
+DSH 只会自动启用顶层安装包的 `dsh.bundle.patch`，不会自动执行 npm 依赖的其他插件配置，因此本项目把 **AgentTeams 和 Smart Subagents 显式挂载在同一个配置文件内**：
 
 ```yaml
 - insert:
+    - id: agent-teams
+      name: '@nanmicoder/dsh-agent-teams'
+      config:
+        stateDir: .agent-teams
+        memberProvider: spawn
     - id: smart-subagents
       name: '@hamizdev/dsh-smart-subagents'
       config:
@@ -83,47 +90,37 @@ dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.2.0.tgz --igno
         requireTeamApproval: true
 ```
 
-| 配置项 | 默认值 | 作用 |
+| 参数 | 默认值 | 功能 |
 | --- | --- | --- |
-| `mode` | `balanced` | `off` / `conservative` / `balanced` / `aggressive` |
-| `maxParallel` | `3` | 建议的普通子智能体同时运行数量（1–8），**不强制执行** |
-| `preferForkForContext` | `true` | 确实需要继承对话上下文时优先 `subagent_fork` |
-| `preferAgentTeams` | `true` | 有协调需求且确实可用时选择 AgentTeams |
-| `teamMinWorkstreams` | `2` | 团队任务至少具备几个实质性独立工作流（2–6；保守模式至少 3 个） |
-| `requireTeamApproval` | `true` | 优先使用需要用户确认的 staged 团队计划 |
+| `mode` | `balanced` | `off`（关闭）/ `conservative`（保守）/ `balanced`（均衡）/ `aggressive`（积极） |
+| `maxParallel` | `3` | 建议同时运行的普通子智能体数量（1–8），并非强制限制 |
+| `preferForkForContext` | `true` | 子任务需要前文时优先使用 `subagent_fork` |
+| `preferAgentTeams` | `true` | 有协调任务且当前能调用 `agent_teams_create` 时优先使用团队 |
+| `teamMinWorkstreams` | `2` | 建议组成团队的实质工作流数量（2–6） |
+| `requireTeamApproval` | `true` | 生成需要用户明确批准的团队计划 |
 
-将 `requireTeamApproval` 设置为 `false` **也不意味着允许未经同意直接开工**；只有用户针对该任务明确要求立即执行时，才考虑跳过审查。
+## 和 Value Router 的关系
 
-## 使用示例
+朋友的 [Value Router](https://github.com/zhuifengqug/dsh-value-router) 提供四档难度线路、供应商轮转、模型降级和备用线路。本插件不会重新实现一套可能冲突的路由器。如果你已经另外正确安装并启用了兼容的 Value Router，Smart Subagents 会保留它与 AgentTeams 的模型选择行为。
 
-向 DSH 发送：
+**暂未把 Value Router 写成强制 npm 依赖：** 当前尚未独立核实到其可直接安装的 npm 发布产物，不能伪造包名、假定 GitHub 源码已编译完毕，或在 DSH 安装时偷偷执行构建脚本。
 
-> 分别检查登录认证逻辑、排查 UI 性能问题，并为这两个模块设计独立测试。你自己判断是否需要子智能体或团队；如果要创建团队，先让我看执行计划再开始。
+## 测试和发布
 
-当 `agent_teams_create` 在当前会话确实可用时，主智能体可以创建**待确认的团队计划**。你可以先核对每个成员的模型、职责、任务顺序和依赖关系，然后在真实 Team collaboration 面板中点击 **Approve & Run**。如果没有安装 AgentTeams，插件可以退回 DSH 原生委派工具；简单任务仍可由主智能体单独完成。
-
-**验收标准：** 要检查实际工具调用或 AgentTeams 的真实团队记录。对话里仅声称“已经调用子智能体”，不能证明后台确实执行了工作。
-
-## 技术原理与边界
-
-1. 在 Cordis 的 `systemPrompt.section` 注册一段 `order: 2750` 的策略提示，并按当前智能体的工具可见性动态决定内容；不存在有效委派工具时不注入策略。
-2. 插件**不会注册额外的模型工具**，不会修改其他插件配置、创建工作区、读取凭据或自行发送网络请求。
-3. **AgentTeams** 负责真实成员状态、调度、消息和团队面板；**Value Router** 负责 `provider / model / reasoning_effort`；Smart Subagents 只引导主智能体决定何时调用它们。
-4. 插件无法强制模型派发、强制并发限制，也不保证每个复杂任务都会创建团队。
-5. 如果宿主版本或配套插件不兼容，应先解决兼容性问题，不应强装或声称面板已经可用。
-
-## 开发与测试
-
-```bash
+```powershell
+npm test
 npm run verify
+npm pack
 ```
 
-使用 Node.js 内置测试运行器，覆盖配置默认值、工具权限可见性、原生与团队路径、审批约束、Value Router 兼容策略和插件生命周期。**仍需在实际的 DSH Desktop + AgentTeams + Value Router 环境下做完整集成验证。**
+源码与安装包经过本地检查，但**完整的 DSH Desktop + AgentTeams + Value Router 联合运行仍需真机集成测试**，尤其需要核对服务端插件加载、浏览器客户端 UI 和用户审批流程。
 
-## 相关项目
+要让 `@hamizdev/dsh-smart-subagents@0.3.0` 这种 npm 安装方式可用，必须由**拥有 npm `@hamizdev` 命名空间发布权限**的账号完成 `npm publish --access public`，或者配置经过授权的 npm Trusted Publisher。GitHub 用户名与 npm 用户名不是一回事；不要在聊天里发送 npm 密码或 Token。
 
-- [DeepSeek Harness — 原生子智能体工具](https://github.com/deepseek-ai/deepseek-harness/tree/master/packages/subagent/tool-subagent)
-- [NanmiCoder/dsh-agent-teams — 真实团队调度和可视化面板](https://github.com/NanmiCoder/dsh-agent-teams)
-- [zhuifengqug/dsh-value-router — 模型路由](https://github.com/zhuifengqug/dsh-value-router)
+## 致谢及许可
 
-MIT License © 2026 HamizDev，详见 [LICENSE](LICENSE)。
+- [NanmiCoder/dsh-agent-teams](https://github.com/NanmiCoder/dsh-agent-teams) — 提供真实多智能体执行器及可视化面板，MIT 协议。
+- [zhuifengqug/dsh-value-router](https://github.com/zhuifengqug/dsh-value-router) — 可选模型路由插件。
+- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — 原生子智能体基础设施。
+
+本项目采用 MIT 许可证（见 [LICENSE](LICENSE)）。其他插件依旧由各自作者独立维护并遵守各自许可证。
