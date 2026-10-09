@@ -15,10 +15,10 @@ test('one-install package pins real AgentTeams and declares a Cordis bundle', ()
 })
 
 test('bundle explicitly mounts each plugin once under its canonical id', () => {
-  assert.equal((yaml.match(/id: agent-teams\\b/g) || []).length, 1)
-  assert.equal((yaml.match(/id: smart-subagents\\b/g) || []).length, 1)
-  assert.equal((yaml.match(/name: '@nanmicoder\\/dsh-agent-teams'/g) || []).length, 1)
-  assert.equal((yaml.match(/name: '@hamizdev\\/dsh-smart-subagents'/g) || []).length, 1)
+  assert.equal((yaml.match(/id: agent-teams\b/g) || []).length, 1)
+  assert.equal((yaml.match(/id: smart-subagents\b/g) || []).length, 1)
+  assert.equal((yaml.match(/name: '@nanmicoder\/dsh-agent-teams'/g) || []).length, 1)
+  assert.equal((yaml.match(/name: '@hamizdev\/dsh-smart-subagents'/g) || []).length, 1)
   assert.ok(yaml.indexOf('id: agent-teams') < yaml.indexOf('id: smart-subagents'))
   assert.match(yaml, /memberProvider: spawn/)
 })
@@ -26,7 +26,7 @@ test('bundle explicitly mounts each plugin once under its canonical id', () => {
 test('both README languages document one-install and optional Value Router', () => {
   for (const path of ['README.md', 'README.zh-CN.md']) {
     const content = text(path)
-    assert.match(content, /@hamizdev\\/dsh-smart-subagents@0\\.3\\.0/)
+    assert.match(content, /@hamizdev\/dsh-smart-subagents@0\.3\.0/)
     assert.match(content, /Value Router/)
   }
   assert.equal(pkg.dependencies['@gjs27/dsh-value-router'], undefined)
