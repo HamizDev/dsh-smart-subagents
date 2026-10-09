@@ -3,6 +3,7 @@ name: Test and publish package
 on:
   push:
     branches: [main]
+    paths: ['package.json']
   workflow_dispatch:
 
 permissions:
@@ -43,4 +44,4 @@ jobs:
             echo "Release $TAG already exists; no new release created."
             exit 0
           fi
-          gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "$TAG" --notes "DSH Smart Subagents $TAG: native subagent delegation policy with conservative, balanced, aggressive and off modes. Model-driven and advisory; does not replace native DSH execution."
+          gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "$TAG" --notes "DSH Smart Subagents $TAG: unified native-subagent delegation plus integrated AgentTeams collaboration UI. Model-driven and advisory. Value Router remains optional."
