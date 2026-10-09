@@ -1,6 +1,6 @@
 {
   "name": "@hamizdev/dsh-smart-subagents",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "One-install Codex-inspired DSH subagent dispatcher with integrated AgentTeams collaboration dashboard and optional Value Router support",
   "type": "module",
   "main": "index.js",
