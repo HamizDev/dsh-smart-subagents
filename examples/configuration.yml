@@ -1,4 +1,4 @@
-# v0.3.0: Installing Smart Subagents also installs and mounts AgentTeams.
+# v0.3.1: Installing Smart Subagents also installs and mounts AgentTeams.
 # The team panel is provided by @nanmicoder/dsh-agent-teams@0.1.22.
 # Do NOT separately install AgentTeams in the same profile.
 # Optional advanced routing: configure @gjs27/dsh-value-router separately
