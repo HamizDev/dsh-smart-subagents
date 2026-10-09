@@ -1,16 +1,20 @@
-# See README for compatible DSH & AgentTeams versions.
-# Optional AgentTeams plugin:
-#   @nanmicoder/dsh-agent-teams@0.1.22
-# Optional Value Router plugin:
-#   @gjs27/dsh-value-router@0.10.0
-# Both require their own setup; Smart Subagents never installs them silently.
+# v0.3.0: Installing Smart Subagents also installs and mounts AgentTeams.
+# The team panel is provided by @nanmicoder/dsh-agent-teams@0.1.22.
+# Do NOT separately install AgentTeams in the same profile.
+# Optional advanced routing: configure @gjs27/dsh-value-router separately
+# until a verified npm distribution is available for dependency pinning.
 - insert:
+    - id: agent-teams
+      name: '@nanmicoder/dsh-agent-teams'
+      config:
+        stateDir: .agent-teams
+        memberProvider: spawn
     - id: smart-subagents
       name: '@hamizdev/dsh-smart-subagents'
       config:
         mode: balanced
-        maxParallel: 3                 # model guidance, not a hard host limit
+        maxParallel: 3
         preferForkForContext: true
-        preferAgentTeams: true         # automatically choose teams if tools exist
-        teamMinWorkstreams: 2          # 2..6; larger teams still require useful work
-        requireTeamApproval: true      # staged plan before execution
+        preferAgentTeams: true
+        teamMinWorkstreams: 2
+        requireTeamApproval: true
