@@ -2,76 +2,80 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-> **v0.2.0** — Codex-inspired, automatic subagent-delegation guidance for DeepSeek Harness (DSH), with optional [AgentTeams](https://github.com/NanmiCoder/dsh-agent-teams) and [Value Router](https://github.com/zhuifengqug/dsh-value-router) integration.
+**v0.3.0 — one install, native subagents + AgentTeams workspace.** A Codex-inspired autonomous delegation policy for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
 
-Smart Subagents is a **small, scope-aware policy plugin**: it helps the primary agent decide when delegation is useful and which **existing** DSH tool to call. It is not a separate agent executor, task scheduler, or UI.
+> **Release status:** Source and the local `.tgz` archive are available; do not use the npm install spec until `@hamizdev/dsh-smart-subagents@0.3.0` is actually published to npm. The package name cannot be reserved or published by creating a GitHub repository.
 
-## How it works
+## What is included?
 
-| Task | Preferred path | What you see |
+| Feature | Owner | Included in the single npm installation? |
 | --- | --- | --- |
-| A quick, sequential request | Main agent | Regular conversation |
-| Independent research, review, or bounded coding | Native DSH `subagent` / `subagent_fork` | Native subagent execution and results |
-| Coordinated tasks with member roles, dependencies, or team tracking | **AgentTeams**, if installed and available to the agent | Its real **Team collaboration** workspace |
-| Model/provider/effort selection | Native DSH routing; optionally **Value Router** | Router/host state and AgentTeams' actual member routes |
+| Automatic task delegation policy | **Smart Subagents** (this project) | Yes |
+| Native one-shot or background subagents | **DSH** built-in subagent tools | Already in compatible DSH presets |
+| Durable teams, real status, members, task DAG and **Team collaboration** UI | [**AgentTeams**](https://github.com/NanmiCoder/dsh-agent-teams) `0.1.22` | **Yes**, pinned runtime dependency, automatically mounted |
+| Four-tier model routing, provider rotation and fallback | [**Value Router**](https://github.com/zhuifengqug/dsh-value-router) | **Optional external integration**, not bundled yet |
 
-**The team member roster, progress bar, task DAG, and run history in the sample screenshot are implemented by AgentTeams.** This plugin does not draw a duplicate panel or invent progress. [See AgentTeams' own UI and documentation](https://github.com/NanmiCoder/dsh-agent-teams#view-teams-in-the-workspace).
+No fabricated progress bars or duplicate team schedulers. The actual team panel is provided by AgentTeams and reads live/persisted team state. The native UI appears only when the version-compatible DSH client successfully loads the companion.
 
-## Features
+## Install — a single npm package spec
 
-- Four routing-policy modes: `off`, `conservative`, **`balanced` (default)**, and `aggressive`.
-- Automatically recommends **direct execution, native subagents, or an AgentTeams plan** based on the task; model behavior remains non-deterministic.
-- Only treats `agent_teams_create` visible **in the current agent scope** as permission to plan a new team; a status-only tool does not qualify.
-- Prefers **staged review and approval** for new teams. Follow the AgentTeams protocol and click **Approve & Run** before dispatch.
-- Avoids double-scheduling: tasks owned by AgentTeams must not be independently launched again via native `subagent`.
-- Leaves model routes, white lists, fallback and effort decisions to DSH / Value Router (when installed).
-- Never bypasses native approvals, sandboxing, recursion limits or user-defined constraints.
-- `maxParallel` is a **suggestion**, not an enforced runtime concurrency limit.
+**Required:** DSH Desktop with compatible embedded Harness. The recommended target is Harness **`0.2.0-rc.2`** with AgentTeams **`0.1.22`**. The standalone `dsh --version` may not correspond to your Desktop's internal version.
 
-## Requirements and compatibility
+When v0.3.0 is published to npm:
 
-- DSH with an active `systemPrompt` and `tools` service; native delegation tools must be exposed for native subagent dispatch.
-- The companion **AgentTeams v0.1.22** and **Value Router v0.10.0** documentation target **DSH 0.2.0-rc.2**. Check your **Desktop's embedded Harness version** before installing: a global `dsh` CLI might not manage the Desktop profile.
-- Node.js `^22.19.0 || >=24.0.0` for local package development.
-- **AgentTeams and Value Router are optional**. Smart Subagents does not auto-install or auto-enable them.
+1. Open **DSH Desktop → Plugins → Add plugin**.
+2. Paste exactly:
 
-The three-plugin combination has undergone source-level compatibility review and local policy tests; **it has not been end-to-end verified on your DSH Desktop installation**.
+   ```text
+   @hamizdev/dsh-smart-subagents@0.3.0
+   ```
 
-## Installation
+3. Select **Enable now**, and restart DSH if prompted.
+4. Ask DSH to perform a multi-part task; it can propose an AgentTeams plan. Approve the plan via **Approve & Run** before the team begins.
+5. Open **View team / Team collaboration** to inspect actual team members, models, task states and dependencies.
 
-### 1. Install AgentTeams (optional, provides the real UI)
+For a CLI-managed profile, **only if it controls the same DSH installation**:
 
-In **DSH Desktop → Plugins → Add plugin**, use the exact npm package specification:
-
-```text
-@nanmicoder/dsh-agent-teams@0.1.22
+```sh
+dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.0
 ```
 
-Enable the plugin. Its **Team collaboration** tab, member list, actual task statuses and dependency graph are owned by AgentTeams. You may also use it directly with `/agent-teams <goal>`.
+### Test an unpublished build
 
-### 2. Install Smart Subagents
-
-Download the `hamizdev-dsh-smart-subagents-0.2.0.tgz` asset from the [v0.2.0 Releases page](https://github.com/HamizDev/dsh-smart-subagents/releases/tag/v0.2.0), **once published**, or build the archive from this repository:
+From this checkout, create a local package with `npm pack`; then install the generated tarball through your Desktop's plugin manager or compatible `dsh plugin` CLI:
 
 ```powershell
 npm test
 npm pack
-# Run in the directory containing the .tgz file:
-dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.2.0.tgz --ignore-scripts
+dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.3.0.tgz --ignore-scripts
 ```
 
-Alternatively, use DSH Desktop's built-in plugin manager if it supports local package files. **Restart DSH** after installing. The standalone CLI and the embedded Desktop installation can use different profiles/runtimes.
+**Important:** Running `npm pack` offline checks this package's declared artifacts, but does **not** prove its npm dependency can be downloaded or the DSH runtime integration succeeds. The dependency is fetched by DSH's package manager when the archive is installed.
 
-### 3. Configure Value Router (optional)
+### Already installed AgentTeams separately?
 
-Install [Value Router](https://github.com/zhuifengqug/dsh-value-router) separately, then configure its `low`, `medium`, `high`, `max` routes and host subagent allowlist. Value Router is the owner of model selection; Smart Subagents does **not** replace its decisions or supply a fake fallback.
+This distribution mounts AgentTeams under its **canonical `agent-teams` plugin ID**. Do **not** keep an independent AgentTeams bundle enabled in the **same** DSH profile, as double mounting can cause collisions or redundant agents/UI. First back up your profile/team state, disable or uninstall the existing independent AgentTeams bundle, and then enable the all-in-one package. This plugin doesn't delete any team files. Other profiles are independent.
+
+## How automatic delegation works
+
+- **Trivial / sequential:** the primary agent works directly.
+- **Independent, bounded investigations or reviews:** call available native `subagent` or `subagent_fork` tools when useful.
+- **Multiple coordinated workstreams:** propose an AgentTeams **staged** plan with a roster, DAG and dependencies. The user inspects and approves it before execution.
+- **Routing:** leave `provider`, `model` and `reasoning_effort` decisions to the current DSH host and optional Value Router. Do not override explicit routes or whitelist checks.
+
+The agent decides when delegation helps; this is **model-level guidance**, not a forced execution interceptor. `maxParallel` is advisory. The actual permission, tool availability, approval and runtime limits belong to DSH / AgentTeams. Team membership and task progress are **never simulated**.
 
 ## Configuration
 
-The built-in `cordis.patch.yml` injects this default Cordis row:
+The package declares `dsh.bundle.patch` and contributes **both rows in the same bundle**. DSH does **not** activate the patch files of transitive dependencies automatically; that is why simply adding AgentTeams to npm `dependencies` is insufficient.
 
 ```yaml
 - insert:
+    - id: agent-teams
+      name: '@nanmicoder/dsh-agent-teams'
+      config:
+        stateDir: .agent-teams
+        memberProvider: spawn
     - id: smart-subagents
       name: '@hamizdev/dsh-smart-subagents'
       config:
@@ -83,47 +87,35 @@ The built-in `cordis.patch.yml` injects this default Cordis row:
         requireTeamApproval: true
 ```
 
-| Setting | Default | Description |
+| Key | Default | Purpose |
 | --- | --- | --- |
-| `mode` | `balanced` | `off` / `conservative` / `balanced` / `aggressive` |
-| `maxParallel` | `3` | Suggested concurrent native workers (1–8), **not enforced** |
-| `preferForkForContext` | `true` | Prefer fork when prior conversation context is needed |
-| `preferAgentTeams` | `true` | Suggest AgentTeams on suitably coordinated tasks if its create tool is actually visible |
-| `teamMinWorkstreams` | `2` | Suggested minimum substantial team workstreams (2–6; conservative mode requires at least 3) |
-| `requireTeamApproval` | `true` | Suggest the native staged plan, followed by explicit user approval |
+| `mode` | `balanced` | `off`, `conservative`, `balanced`, `aggressive` |
+| `maxParallel` | `3` | Suggested native concurrent workers (1–8); not enforced |
+| `preferForkForContext` | `true` | Prefer a fork if full prior parent context is needed |
+| `preferAgentTeams` | `true` | Prefer teams for coordinated work if the `agent_teams_create` tool is visible |
+| `teamMinWorkstreams` | `2` | Suggested minimum number of substantial workstreams (2–6) |
+| `requireTeamApproval` | `true` | Staged plan requiring explicit approval before execution |
 
-Turning `requireTeamApproval` off **does not authorize bypassing review**; an agent should only request immediate execution if the user explicitly asks for it.
+## Compatibility with Value Router
 
-## Try it
+[Value Router](https://github.com/zhuifengqug/dsh-value-router) provides sophisticated `low / medium / high / max` routing, model rotation and fallbacks; those decisions are *not* reimplemented in this package. If you separately install and configure a compatible Value Router, Smart Subagents leaves the provider/model decisions to it and AgentTeams. At this time, the router's exact installable npm artifact has **not been verified**, so we do not pin an invented npm dependency or silently run build scripts during installation.
 
-Ask DSH:
-
-> Review the authentication module, investigate the UI performance regression independently, and prepare focused tests for both. Decide whether a team would help, and show me the plan before starting any team work.
-
-With the appropriate AgentTeams tools exposed, the main agent may create a **staged team plan**. Review the member models, roles, task DAG and dependencies, then select **Approve & Run** in the real Team collaboration panel. If the team tools are absent, the plugin can guide native subagent delegation instead. For a trivial request, it can advise the main agent to work alone.
-
-**Validation:** Check for real native tool calls or actual AgentTeams tasks and progress. Merely saying “I delegated” in the conversation is not evidence that any child was started.
-
-## Architecture and limitations
-
-1. Adds one Cordis `systemPrompt.section` at order `2750` and checks native/team tools per agent scope. Its text is empty when no viable tools are available.
-2. It **does not register** a model-facing tool, mutate other plugin configuration, create workspaces, access credentials or issue network requests.
-3. **AgentTeams** owns real task lifecycle, dashboard data, member conversations and approval UX. **Value Router** owns provider/model/reasoning-effort selection. Smart Subagents only guides the main model's choice.
-4. It does not enforce concurrency, compel model tool use, automatically turn every conversation into a team, or guarantee routing quality.
-5. If the host runtime or companion plugins are incompatible, do not force installation or claim the dashboard works. Verify on the target machine.
-
-## Development and testing
+## Packaging, publication and testing
 
 ```sh
+npm test
 npm run verify
+npm pack
 ```
 
-Uses the Node.js built-in test runner. Tests exercise configuration defaults, scope-aware capability discovery, native and team pathways, approval safety, Value Router ownership and policy lifecycle. An end-to-end test with installed DSH Desktop + AgentTeams + Value Router is still required.
+The code and packaging assertions are tested locally. **An end-to-end test on DSH Desktop is still needed** to verify its Host loader, browser Team collaboration panel, and any optional router. CI does not substitute for a real Desktop test.
 
-## Related projects
+Publishing the one-line npm spec requires the owner of the **npm `@hamizdev` scope** to authenticate to npm and run `npm publish --access public` (or configure an authorized npm trusted publisher). GitHub ownership alone is not sufficient. Do not share npm passwords or tokens in an issue or chat.
 
-- [DeepSeek Harness — native subagent tools](https://github.com/deepseek-ai/deepseek-harness/tree/master/packages/subagent/tool-subagent)
-- [NanmiCoder/dsh-agent-teams — real team scheduler and UI](https://github.com/NanmiCoder/dsh-agent-teams)
-- [zhuifengqug/dsh-value-router — model routing](https://github.com/zhuifengqug/dsh-value-router)
+## Acknowledgements / License
 
-MIT License © 2026 HamizDev. See [LICENSE](LICENSE).
+- [NanmiCoder/dsh-agent-teams](https://github.com/NanmiCoder/dsh-agent-teams) — MIT; the actual multi-agent scheduler and visual dashboard.
+- [zhuifengqug/dsh-value-router](https://github.com/zhuifengqug/dsh-value-router) — optional route integration.
+- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — original subagent infrastructure.
+
+Smart Subagents is licensed under MIT (see [LICENSE](LICENSE)). All companion projects remain independently maintained under their own licenses.
