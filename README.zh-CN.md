@@ -2,9 +2,9 @@
 
 [English](README.md) | **简体中文**
 
-**v0.3.0 — 一次安装，获得自动分派和真实团队协作面板。** 适用于 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 的 Codex 风格自动子智能体分工策略。
+**v0.3.1 — 一次安装，获得自动分派和真实团队协作面板。** 适用于 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 的 Codex 风格自动子智能体分工策略。
 
-> **发布状态：** GitHub 源码和本地 `.tgz` 安装包可以先使用，但只有 `@hamizdev/dsh-smart-subagents@0.3.0` **真正发布到 npm 后**，才能在 DSH 中直接输入此名称安装。仅创建 GitHub 仓库并不能获得 npm 包。
+> **发布状态：** GitHub 源码和本地 `.tgz` 安装包可以先使用，但只有 `@hamizdev/dsh-smart-subagents@0.3.1` **真正发布到 npm 后**，才能在 DSH 中直接输入此名称安装。仅创建 GitHub 仓库并不能获得 npm 包。
 
 ## 一个插件里有哪些能力？
 
@@ -21,13 +21,13 @@
 
 **运行环境：** 推荐 Harness 内核 **`0.2.0-rc.2`**，对应 AgentTeams **`0.1.22`**。注意 DSH Desktop 自带内核；全局终端执行 `dsh --version` 不一定是桌面端内核的真实版本。
 
-待 v0.3.0 **正式发布到 npm 后**：
+待 v0.3.1 **正式发布到 npm 后**：
 
 1. 进入 **DSH Desktop → 插件（Plugins）→ 添加插件（Add plugin）**。
 2. 输入以下完整包名：
 
    ```text
-   @hamizdev/dsh-smart-subagents@0.3.0
+   @hamizdev/dsh-smart-subagents@0.3.1
    ```
 
 3. 选择 **立即启用（Enable now）**，按提示重启 DSH。
@@ -38,7 +38,7 @@
 仅在 CLI 与桌面端确实共享同一个 Profile 时，可以通过命令安装：
 
 ```powershell
-dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.0
+dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.1
 ```
 
 ### npm 尚未发布前，先测试安装包
@@ -48,7 +48,7 @@ dsh plugin --profile desktop add --save-exact @hamizdev/dsh-smart-subagents@0.3.
 ```powershell
 npm test
 npm pack
-dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.3.0.tgz --ignore-scripts
+dsh plugin --profile desktop add .\hamizdev-dsh-smart-subagents-0.3.1.tgz --ignore-scripts
 ```
 
 如果 DSH Desktop 插件管理器支持本地包导入，也可以直接选取该 `.tgz`。注意：`npm pack` 本身只检查文件完整性，不代表网络上能取回依赖，也不代表 DSH Desktop 中的 UI 已完成实际验证；安装时 DSH 包管理器仍需解析 AgentTeams 依赖。
@@ -115,7 +115,7 @@ npm pack
 
 源码与安装包经过本地检查，但**完整的 DSH Desktop + AgentTeams + Value Router 联合运行仍需真机集成测试**，尤其需要核对服务端插件加载、浏览器客户端 UI 和用户审批流程。
 
-要让 `@hamizdev/dsh-smart-subagents@0.3.0` 这种 npm 安装方式可用，必须由**拥有 npm `@hamizdev` 命名空间发布权限**的账号完成 `npm publish --access public`，或者配置经过授权的 npm Trusted Publisher。GitHub 用户名与 npm 用户名不是一回事；不要在聊天里发送 npm 密码或 Token。
+要让 `@hamizdev/dsh-smart-subagents@0.3.1` 这种 npm 安装方式可用，必须由**拥有 npm `@hamizdev` 命名空间发布权限**的账号完成 `npm publish --access public`，或者配置经过授权的 npm Trusted Publisher。GitHub 用户名与 npm 用户名不是一回事；不要在聊天里发送 npm 密码或 Token。
 
 ## 致谢及许可
 
