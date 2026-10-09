@@ -1,0 +1,29 @@
+# Manual npm publishing after the user has authorized this package on npm.
+# Publishing will NOT succeed just because a GitHub repository exists.
+# Before dispatching: configure npm Trusted Publishing for this repository,
+# or publish the first version locally with your own npm login.
+name: Publish to npm (manual)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Verify repository
+        run: npm test && node --check index.js && npm pack --dry-run --json > /tmp/pack-check.json
+      - name: Publish with npm Trusted Publishing
+        run: |
+          npm install --global npm@latest
+          npm publish --access public --provenance
